@@ -17,6 +17,8 @@ app = FastAPI()
 
 load_dotenv(override=True)
 openai.api_key = os.environ.get("OPENAI_API_KEY")
+CHROMADB_HOST = os.environ.get("CHROMADB_HOST", "host.docker.internal")
+CHROMADB_PORT = os.environ.get("CHROMADB_PORT", "8000")
 
 
 def create_index(chroma_collection_name, service_context, vector_store):
@@ -78,7 +80,10 @@ if __name__ == "__main__":
     logging.info("Iniciando la aplicación FastAPI...")
 
     embedding_model = common.get_embedding_model()
-    chromadb_client = ChromaDBClient()
+    chromadb_client = ChromaDBClient(
+        host=CHROMADB_HOST,
+        port=CHROMADB_PORT,
+    )
     llm = common.get_llm(model_temperature=0.5)
 
     prompt_helper = PromptHelper(

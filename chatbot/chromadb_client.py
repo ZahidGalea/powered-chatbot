@@ -13,10 +13,11 @@ from llama_index import (
 from common import ChromaDBCollections
 
 
+
 class ChromaDBClient:
     client: API
 
-    def __init__(self, _type="http", host="host.docker.internal", port="8000"):
+    def __init__(self, host, port, _type="http"):
         self.port = port
         self.host = host
         self._type = _type

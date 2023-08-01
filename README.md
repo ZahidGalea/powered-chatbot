@@ -2,7 +2,7 @@
 
 ## Build the images first:
 
-### App
+### Chatbot
 
 ```bash
 export VERSION=$(cat ./app/VERSION)

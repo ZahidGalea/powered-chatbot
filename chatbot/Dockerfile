@@ -20,13 +20,8 @@ RUN pip install uvicorn
 RUN pip install httpx
 RUN pip install python-dotenv
 
+COPY api.py .
+COPY common.py .
+COPY chromadb_client.py .
 
-#COPY api.py .
-#COPY common.py .
-#COPY load_files.py .
-#COPY chromadb_client.py .
-#COPY data ./data
-#COPY models/ggml-gpt4all-j-v1.3-groovy.bin models/
-#COPY intfloat_e5-large-v2 .
-#
-#ENTRYPOINT ["python","api.py"]
+ENTRYPOINT ["python","api.py"]

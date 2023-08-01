@@ -5,13 +5,18 @@ from dotenv import load_dotenv
 from llama_index import set_global_service_context
 
 import common
+from chatbot.api import CHROMADB_HOST, CHROMADB_PORT
 from chromadb_client import ChromaDBClient
 
 load_dotenv(override=True)
 openai.api_key = os.environ.get("OPENAI_API_KEY")
 
+
 def load_local_folder(folder, chroma_collection_name):
-    chromadb_client = ChromaDBClient()
+    chromadb_client = ChromaDBClient(
+        host=CHROMADB_HOST,
+        port=CHROMADB_PORT,
+    )
     storage_context, service_context, vector_store = common.build_pre_index(
         _chroma_collection_name=chroma_collection_name,
         remote_db=chromadb_client.client,
