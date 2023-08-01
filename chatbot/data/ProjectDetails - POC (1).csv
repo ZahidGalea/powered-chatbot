@@ -1,0 +1,60 @@
+id,client,title,main objective,implementation time,challenges,solution,benefit,period,type of service
+1,client:Walmart,title:Data platform for the operations equipment,main objective:Scalable architecture to the needs of the team,implementation time:Implementation in 6 months,"challenges:Understand all the actors involved in the processing of operations domain, automation of manual processes, design development standards, facilitate the operation and monitoring of the processes","solution:Design of a Walmart cloud data platform using Hybrid Resources on-PREM and GCP, application of Dataops practices through tools such as DBT and Kubernetes","benefit:Rehender of equipment efforts in activities of greater value by increasing more than 100% visits in reports, increased productivity (~ 100%), reduction ~ 95% of errors due to load processes, 90% reduction of manual processes",period:July 2022,type of service:Staff Augmentation
+2,client:Walmart,title:REFACTORING OF LEGATED SYSTEMS,main objective:Process optimization: 96% data loading time reduction,implementation time:Implementation in 12 months,challenges:Dismantle general report of processes associated with sales - availability of operating macro products and indicators,solution:Construction of a centralized dataset in the power BI,"benefit:General report consumption increases by more than 200%, data loading times at the PowerBi service according to the business, set of KPI centralized in a DATASET controlled by the area",period:January 2022,type of service:Staff Augmentation
+3,client:Walmart,title:Teradata migration to Bigquery,main objective:Processes dismantling (business) developed in Teradata,implementation time:Implementation in 4 months,"challenges:Identify legacy reports connected to Teradata, translate queries, generate new connections to Bigquery","solution:Mapping Development of reports connected to Teradata through the Power BI API, prioritization by business impact, continuous visibility the process through jira, dear development and construction of connections to BQ to new DF of the GDP Service","benefit:0 dependencies of bequeathed systems in Teradata, construction of work frame for migration processes in the consumption layer, knowledge acquired to estimate the effort of work of the same nature",period:December 2021,type of service:Staff Augmentation
+4,client:Walmart,title:Data Government applied to multi-dominiums,main objective:Reengineering of analytical resources for scalable governance,implementation time:Implementation still in execution,"challenges:Govern data from different sources, availability of safe - quality and reliable data, reengineering of legacy reports","solution:Construction of Data Lineage from bequeathed resources through reports to the origin, Data Quality Assessment for each table and policy application, artifact development and metadata documentation","benefit:Obtain control of the metada responding who responsible for the use and maintenance of artifacts, reduction of process indefinitions, accessibility and controlled availability to the data",period:Marzo 2023,type of service:Staff Augmentation
+5,client:Walmart,title:Doble Control - AP,main objective:Process development and visibility in merchandise reception area,implementation time:Implementation in 7 months,"challenges:Demonstrate that through the modification of the double control process you can recover more money, improve adherence indicators","solution:Prepare an analysis of suppliers to understand control processes, descriptive analysis of premises, selection rules are developed for double control, spaces of recommendation are generated, visibility instruments were developed in Power BI","benefit:Exhibition of suppliers never controlled, money recovery (~ 66%), better communication between premises, poc made in 3 stores with the possibility of extension to 30",period:April 2022,type of service:Staff Augmentation
+6,client:Sky,title:Ml applied in purchase processes through eCommerce,main objective:Implementation of Recommendation Model,implementation time:Implementation 3 months,"challenges:Offer additional service packages, to provide better purchase options
+Maximize income
+Offer a custom customer experience
+","solution:Creation of an ML model, based on decision trees, according to the characteristics of customers.
+Creation of a continuous integration ecosystem with Azure platforms.","benefit:Governed architecture of models on Azure platforms.
+Model adjustment by campaigns.
+Recommendations based on purchasing history.
+Greater customer knowledge.",period:January 2023,type of service:Staff Augmentation
+7,client:Latam,title:Onboarding and training. Process automation,main objective:Accelerate and standardize onboarding processes and good practices,implementation time:Ongoing implementation,challenges:Train the developer team about the use of reporting tools,"solution:Development of technical documentation, good practices and rapid assistance of SQL queries. Exploitation of tools and expenses reduction. Efficient use of resources around Bigquery and Looker",benefit:Standard and agile processes for user creation. Significant decrease in costs of use of resources. Empowerment of tools knowledge control processes,period:November 2022,type of service:Staff Augmentation
+8,client:Latam,title:Flight analysis on Flight Radar 24,main objective:Find new opportunities on the routes scheduled by the company,implementation time:Implementation in 3 months,challenges:The data were with 3% completeness. The large size of the bases and their processing cost,solution:The data loading script (99.7% completeness) was corrected. Looker board for simple analysis of proposed routes and obtaining new opportunities,benefit:Fuel savings and money,period:Marzo 2023,type of service:Staff Augmentation
+9,client:Latam,title:Dashboard Performance Campaign,main objective:Insight generation on marketing tactical campaigns,implementation time:Implementation 2 months,challenges:Insight generation on marketing tactical campaigns,solution:Creation of a data model that answers the customer's questions and creation of a Dashboard with a user-friendly story -cling,benefit:Correct decision making and therefore determination of the correct budget and focus for each campaign,period:June 2023,type of service:Staff Augmentation
+10,client:Latam,title:Datalake de Business Dispatch for Latam Airlines,main objective:Provide real -time planning and stowage information,implementation time:Implementation in 6 months,challenges:Understand all the necessary systems to intake to build the best possible architecture that would meet the data as close to real time.,"solution:GCP cloud architecture contemplating; Kubernetes, Pub/Sub, Dataflow, and batch processing applications.","benefit:Improvements in various kpis: Delta Zero Fuel Weight (DZFW), plans planned weight control vs the real weight entered in real time, allowing savings in fuel terms. There is also a greater control of the ""reservoir"" time to plan a flight, which translates into savings in terms of time.",period:,type of service:Staff Augmentation
+11,client:Latam,title:Panel Audit,main objective:Report Development for Anti -Fraud decision making,implementation time:Implementation in 8 months,"challenges:Development of the data model since the necessary information to create it
+It comes from several sources.
+Many use cases and fraud alternatives.
+MEASUREMENT OF RESULTS.","solution:Reporting development in Looker Pro used mostly by Contact Center auditors to prevent or as
+Minimum account and detect fraud for sale of airckers.","benefit:Reduction of a considerable amount of losses
+In USD annually, caused by fraudulent agencies or users.
+Greater agility and rapides in the search process.
+Greater control of auditors.",period:September 2023,type of service:Staff Augmentation
+12,client:Definition 6,title:Integrated customer report - Business Design,main objective:Design business report according to the lines of UX/UI,implementation time:Implementation in 2 months,"challenges:Create an integrated platform that allows collaboration between various business units.
+Design and develop the front of the report using custom user experience (UX) and user interface (IU).",solution:Develop a large -scale report on Tableau.,"benefit:Easy comparison between business units through a business design design.
+Versatile template for agile creation of additional reports and solutions.
+Scalable reports on Tableau that optimize business data analysis.
+",period:Marzo 2023,type of service:Project
+13,client:Tenaris,"title:LEGADY SYSTEM INTEGRALIOR
+the corporate platform",main objective:Implement scalable and efficient architecture,"implementation time:Implementation
+still in execution","challenges:Integrate legacy systems through diverse components for greater cohesion.
+Create a scalable and efficient architecture that optimizes system performance.
+Design a structure that allows growth and adaptability to future needs.
+","solution:Integrate the systems bequeathed to Data Platform de Tenaris, through components such as Nifi, Kafka, Databricks, Postgre, Azure Storage Account, etc.","benefit:Consolidation of the information of a single data repository (Tenaris Data Platform).
+Improvement of SLA and robustness of the platform.
+Modernization of architecture to Cloud.
+",period:Marzo 2023,type of service:
+14,client:Copec,"title:Transaction integration (products and fuel)","main objective:Construction of standard integration processes",implementation time:Implementation in 5 months,"challenges:Implement a data pipeline ecosystem from an SQS to a relational consumer layer on AWS.
+Treatment of 12 sources, stored in a non-relational base.","solution:13 tables were created in Dynamo to store transactions, differentiated by payment form and type of document.
+13 Lambda functions were developed for the flow of data between Dynamo, Kinesis and Landing S3, one for each type of transaction.
+Resources were created in Athena, and Gue for transfers.","benefit:Consolidation of scheduled timing processes
+On-mand processes start
+Consolidation of consumption layer
+",period:Marzo 2022,type of service:
+15,client:Cencosud,title:ACID LABS promoted sales through data,main objective:Increase sales through data use,implementation time:Implementation in 5 months,"challenges:Maximize the capacity of stores, depending on interest parameters such as; schedule, physical limits and dedicated personal.","solution:Development of an automatic learning model (ML) that estimates the sales capacity per store and specific time for a certain number of days. Our model is updated every 6 months to guarantee its continuous precision.","benefit:Implementation of a Custom Methodology for identification of opportunities.
+Argued projections
+Greater confidence in data
+Creation of high value reports",period:January 2022,type of service:
+16,client:Koandina,title:Data segmentation and governance,main objective:Segment the organization data regional,implementation time:Implementation in 4 months,"challenges:Provide selective visibility of information, according to country and a consolidated vision for a global perspective.
+
+","solution:SAP tables intake at AWS Services Data Lake.
+Generation of multiple views to filter by region.
+Development of inheritable permits, controlled for resources access.
+","benefit:Governed architecture of models on Azure platforms.
+Model adjustment by campaigns.
+Recommendations based on purchasing history.
+Greater customer knowledge.",period:April 2022,type of service:

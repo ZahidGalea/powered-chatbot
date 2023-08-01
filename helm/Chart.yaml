@@ -1,0 +1,4 @@
+apiVersion: v2
+name: powered-chatbot
+description: Powered-chatbot that reads documents
+version: 1.0.0

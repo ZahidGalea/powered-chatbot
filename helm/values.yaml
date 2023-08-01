@@ -1,0 +1,12 @@
+name: powered-chatbot
+namespace: "chatbot"
+
+embedding:
+  image_version: 1.0.3
+  container_port: 5000
+
+powered_chatbot_app:
+  image_version: 1.0.4
+
+chromadb:
+  image_version: latest

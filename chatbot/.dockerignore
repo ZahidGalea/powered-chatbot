@@ -1,0 +1,6 @@
+./sentence-transformers_all-mpnet-base-v2
+./models--facebook--opt-iml-1.3b
+./intfloat_e5-large-v2
+./models
+./models--google--flan-t5-base
+./models--t5-large
