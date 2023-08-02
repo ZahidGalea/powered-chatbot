@@ -10,8 +10,8 @@ from llama_index.constants import DEFAULT_CONTEXT_WINDOW, DEFAULT_NUM_OUTPUTS
 from llama_index.prompts.prompt_type import PromptType
 from llama_index.query_engine import RetrieverQueryEngine
 
-import common
-from chromadb_client import ChromaDBClient
+import core
+from chroma_client import ChromaDBClient
 
 app = FastAPI()
 
@@ -22,7 +22,7 @@ CHROMADB_PORT = os.environ.get("CHROMADB_PORT", "8000")
 
 
 def create_index(chroma_collection_name, service_context, vector_store):
-    index = common.get_index(
+    index = core.get_index(
         _chroma_collection_name=chroma_collection_name,
         vector_store=vector_store,
         service_context=service_context,
@@ -79,12 +79,12 @@ async def query(request: Request):
 if __name__ == "__main__":
     logging.info("Iniciando la aplicación FastAPI...")
 
-    embedding_model = common.get_embedding_model()
+    embedding_model = core.get_embedding_model()
     chromadb_client = ChromaDBClient(
         host=CHROMADB_HOST,
         port=CHROMADB_PORT,
     )
-    llm = common.get_llm(model_temperature=0.5)
+    llm = core.get_llm(model_temperature=0.5)
 
     prompt_helper = PromptHelper(
         context_window=DEFAULT_CONTEXT_WINDOW,
@@ -92,10 +92,10 @@ if __name__ == "__main__":
         chunk_overlap_ratio=0.1,
         chunk_size_limit=None,
     )
-    node_parser = common.get_node_parser()
+    node_parser = core.get_node_parser()
 
-    storage_context, service_context, vector_store = common.build_pre_index(
-        _chroma_collection_name=common.ChromaDBCollections.default_collection,
+    storage_context, service_context, vector_store = core.build_pre_index(
+        _chroma_collection_name=core.ChromaDBCollections.default_collection,
         remote_db=chromadb_client.client,
         node_parser=node_parser,
         llm=llm,
@@ -103,7 +103,7 @@ if __name__ == "__main__":
         prompt_helper=prompt_helper,
     )
     index = create_index(
-        common.ChromaDBCollections.default_collection,
+        core.ChromaDBCollections.default_collection,
         service_context=service_context,
         vector_store=vector_store,
     )

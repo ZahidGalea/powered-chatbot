@@ -4,9 +4,9 @@ import openai
 from dotenv import load_dotenv
 from llama_index import set_global_service_context
 
-import common
+import core
 from chatbot.api import CHROMADB_HOST, CHROMADB_PORT
-from chromadb_client import ChromaDBClient
+from chroma_client import ChromaDBClient
 
 load_dotenv(override=True)
 openai.api_key = os.environ.get("OPENAI_API_KEY")
@@ -17,12 +17,12 @@ def load_local_folder(folder, chroma_collection_name):
         host=CHROMADB_HOST,
         port=CHROMADB_PORT,
     )
-    storage_context, service_context, vector_store = common.build_pre_index(
+    storage_context, service_context, vector_store = core.build_pre_index(
         _chroma_collection_name=chroma_collection_name,
         remote_db=chromadb_client.client,
-        node_parser=common.get_node_parser(chunk_size=500, chunk_overlap=50),
-        llm=common.get_llm(),
-        embed_model=common.get_embedding_model(),
+        node_parser=core.get_node_parser(chunk_size=500, chunk_overlap=50),
+        llm=core.get_llm(),
+        embed_model=core.get_embedding_model(),
     )
 
     set_global_service_context(service_context)
@@ -39,5 +39,5 @@ def load_local_folder(folder, chroma_collection_name):
 if __name__ == "__main__":
     load_local_folder(
         folder="data/",
-        chroma_collection_name=common.ChromaDBCollections.default_collection,
+        chroma_collection_name=core.ChromaDBCollections.default_collection,
     )

@@ -17,6 +17,13 @@ docker build -t zahidgalea/chromadb:latest ./chroma
 docker push zahidgalea/chromadb:latest
 ```
 
+### Streamlit UI
+
+```bash
+docker build -t zahidgalea/chatbot-ui:latest ./ui
+docker push zahidgalea/chatbot-ui:latest
+```
+
 ## Deployment in K8S
 
 In helm folder

@@ -11,10 +11,8 @@ from components.utils import keep_file_from_path
 
 ACIDLABS_IMAGE = Image.open("assets/icons/acidlabs.png")
 
-ENVIRONMENT_INFRA = os.environ.get("ENVIRONMENT_INFRA", "docker")
-HOST = "localhost"
-if ENVIRONMENT_INFRA == "docker":
-    HOST = "host.docker.internal"
+CHATBOT_HOST = os.environ.get("CHATBOT_HOST", "host.docker.internal")
+CHATBOT_PORT = os.environ.get("CHATBOT_PORT", "5001")
 
 
 def main():
@@ -23,7 +21,7 @@ def main():
     )
     st.title(f"Dataverse Chatbot 🤖")
 
-    sidebar(ACIDLABS_IMAGE.resize((100, 100)), host=HOST)
+    sidebar(ACIDLABS_IMAGE.resize((100, 100)), host=CHATBOT_HOST, port=CHATBOT_PORT)
 
     st.header("Chat with us!")
 
@@ -45,7 +43,7 @@ def main():
             message_placeholder = st.empty()
 
             response = requests.post(
-                "http://host.docker.internal:5001/query",
+                f"http://{CHATBOT_HOST}:{CHATBOT_PORT}/query",
                 data=json.dumps({"text": st.session_state.messages[-1]["content"]}),
                 stream=True,
             )

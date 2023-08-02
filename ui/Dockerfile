@@ -13,7 +13,6 @@ RUN pip install uvicorn
 RUN pip install httpx
 RUN pip install streamlit
 
-#COPY ui.py .
-#COPY .streamlit/ ./.streamlit
+COPY . .
 
 ENTRYPOINT ["streamlit","run","/app/ui.py"]

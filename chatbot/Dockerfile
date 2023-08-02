@@ -21,7 +21,7 @@ RUN pip install httpx
 RUN pip install python-dotenv
 
 COPY api.py .
-COPY common.py .
-COPY chromadb_client.py .
+COPY core.py .
+COPY chroma_client.py .
 
 ENTRYPOINT ["python","api.py"]

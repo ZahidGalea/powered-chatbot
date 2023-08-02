@@ -1,5 +1,6 @@
 import datetime
 import logging
+import os
 
 import chromadb
 from chromadb import API
@@ -10,16 +11,15 @@ from llama_index import (
     VectorStoreIndex,
 )
 
-from common import ChromaDBCollections
-
+from core import ChromaDBCollections
 
 
 class ChromaDBClient:
     client: API
 
-    def __init__(self, host, port, _type="http"):
-        self.port = port
-        self.host = host
+    def __init__(self, host=None, port=None, _type="http"):
+        self.port = host or os.environ.get("CHROMADB_PORT", "8000")
+        self.host = port or os.environ.get("CHROMADB_HOST", "host.docker.internal")
         self._type = _type
         self.set_chromadb_client()
 
@@ -78,7 +78,9 @@ class ChromaDBClient:
                 if "file_name" in metadata:
                     if not metadata["file_name"] in already_in:
                         already_in.append(metadata["file_name"])
-                        files_loaded.append((metadata["file_name"], metadata["datetime"]))
+                        files_loaded.append(
+                            (metadata["file_name"], metadata["datetime"])
+                        )
         return files_loaded
 
 

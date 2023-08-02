@@ -8,3 +8,7 @@ powered_chatbot_app:
 chromadb:
   image_version: latest
   container_port: 8000
+  
+ui:
+  image_version: latest
+  container_port: 80

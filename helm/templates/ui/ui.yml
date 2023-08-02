@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ui-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ui-app
+  template:
+    metadata:
+      labels:
+        app: ui-app
+    spec:
+      containers:
+        - name: app
+          image: "zahidgalea/chatbot-ui:{{ .Values.ui.image_version }}"
+          env:
+            - name: CHROMADB_HOST
+              value: "chromadb-service"
+            - name: CHROMADB_PORT
+              value: "{{ .Values.chromadb.container_port }}"
+          ports:
+            - containerPort: {{ .Values.ui.container_port }}
