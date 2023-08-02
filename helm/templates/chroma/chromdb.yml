@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chromadb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chromadb
+  template:
+    metadata:
+      labels:
+        app: chromadb
+    spec:
+      containers:
+        - name: chromadb
+          image: "zahidgalea/chromadb:{{ .Values.chromadb.image_version }}"
+          workingDir: "/chroma"
+          command: [ "uvicorn" ]
+          args: [ "chromadb.app:app", "--reload", "--workers", "1", "--host", "0.0.0.0", "--port", "8000", "--log-config", "log_config.yml" ]
+          ports:
+            - containerPort: {{ .Values.chromadb.container_port }}
+          volumeMounts:
+            - mountPath: /index_data
+              name: index-data
+          env:
+            - name: IS_PERSISTENT
+              value: "TRUE"
+      volumes:
+        - name: chroma-data
+          hostPath:
+            path: /chromadb-host-path
+        - name: index-data
+          emptyDir: { }
