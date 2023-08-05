@@ -18,12 +18,6 @@ logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
 
-class ChromaDBCollections:
-    default_collection = "default"
-    english = "english"
-    spanish = "spanish"
-
-
 def get_embedding_model():
     return OpenAIEmbedding(embed_batch_size=42)
 
@@ -99,7 +93,7 @@ def get_llm(
             {
                 "role": "assistant",
                 "content": "You are an AI assistant that gives answer about documentation in a context only in english language",
-            }
+            },
         ],
         temperature=model_temperature,
     )

@@ -1,5 +1,6 @@
 name: powered-chatbot
 namespace: "chatbot"
+app_version: 1.0.0
 
 powered_chatbot_app:
   image_version: 1.0.4

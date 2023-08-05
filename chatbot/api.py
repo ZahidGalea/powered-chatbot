@@ -11,7 +11,7 @@ from llama_index.prompts.prompt_type import PromptType
 from llama_index.query_engine import RetrieverQueryEngine
 
 import core
-from chroma_client import ChromaDBClient
+from chroma_client import ChromaDBClient, ChromaDBCollections
 
 app = FastAPI()
 
@@ -95,7 +95,7 @@ if __name__ == "__main__":
     node_parser = core.get_node_parser()
 
     storage_context, service_context, vector_store = core.build_pre_index(
-        _chroma_collection_name=core.ChromaDBCollections.default_collection,
+        _chroma_collection_name=ChromaDBCollections.default_collection,
         remote_db=chromadb_client.client,
         node_parser=node_parser,
         llm=llm,
@@ -103,7 +103,7 @@ if __name__ == "__main__":
         prompt_helper=prompt_helper,
     )
     index = create_index(
-        core.ChromaDBCollections.default_collection,
+        ChromaDBCollections.default_collection,
         service_context=service_context,
         vector_store=vector_store,
     )

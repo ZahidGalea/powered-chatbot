@@ -2,12 +2,16 @@
 
 ## Build the images first:
 
-### Chatbot
+### Chatbot & UI
 
 ```bash
-export VERSION=$(cat ./app/VERSION)
+export VERSION=$(cat ./VERSION)
+# Chatbot
 docker build -t zahidgalea/powered-chatbot-app:$VERSION ./chatbot
 docker push zahidgalea/powered-chatbot-app:$VERSION
+# UI
+docker build -t zahidgalea/chatbot-ui:$VERSION ./ui
+docker push zahidgalea/chatbot-ui:$VERSION
 ```
 
 ### ChromaDB
@@ -15,13 +19,6 @@ docker push zahidgalea/powered-chatbot-app:$VERSION
 ```bash
 docker build -t zahidgalea/chromadb:latest ./chroma
 docker push zahidgalea/chromadb:latest
-```
-
-### Streamlit UI
-
-```bash
-docker build -t zahidgalea/chatbot-ui:latest ./ui
-docker push zahidgalea/chatbot-ui:latest
 ```
 
 ## Deployment in K8S
@@ -38,8 +35,9 @@ kubectl config set-context --current --namespace=powered-chatbot
 ```
 
 ```bash
+export VERSION=$(cat ./VERSION)
 cd helm
-helm upgrade powered-chatbot . --namespace powered-chatbot --install --create-namespace --debug
+helm upgrade powered-chatbot . --namespace powered-chatbot --install --create-namespace --debug --set app_version=$VERSION
 ```
 
 To access the embedding and database Api
@@ -52,5 +50,7 @@ kubectl port-forward service/chromadb-service 8000:8000 &
 ### To develop UI
 
 ```bash
-docker run -v /C:/Users/zahid/PycharmProjects/powered-chatbot/ui/:/app/ ui:latest
+export VERSION=$(cat ./VERSION)
+docker build -t zahidgalea/chatbot-ui:$VERSION ./ui
+docker run -v ${pwd}/ui:/app/ zahidgalea/chatbot-ui:$VERSION
 ```

@@ -11,7 +11,11 @@ from llama_index import (
     VectorStoreIndex,
 )
 
-from core import ChromaDBCollections
+
+class ChromaDBCollections:
+    default_collection = "default"
+    english = "english"
+    spanish = "spanish"
 
 
 class ChromaDBClient:
