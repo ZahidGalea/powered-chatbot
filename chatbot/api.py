@@ -3,43 +3,22 @@ import os
 
 import openai
 import uvicorn
-from dotenv import load_dotenv
 from fastapi import FastAPI, Request
-from llama_index import Prompt, PromptHelper
-from llama_index.constants import DEFAULT_CONTEXT_WINDOW, DEFAULT_NUM_OUTPUTS
+from llama_index import Prompt, VectorStoreIndex
 from llama_index.prompts.prompt_type import PromptType
-from llama_index.query_engine import RetrieverQueryEngine
 
 import core
-from chroma_client import ChromaDBClient, ChromaDBCollections
+from pinecone_manager import PineconeClientManager
 
 app = FastAPI()
 
-load_dotenv(override=True)
 openai.api_key = os.environ.get("OPENAI_API_KEY")
-CHROMADB_HOST = os.environ.get("CHROMADB_HOST", "host.docker.internal")
-CHROMADB_PORT = os.environ.get("CHROMADB_PORT", "8000")
-
-
-def create_index(chroma_collection_name, service_context, vector_store):
-    index = core.get_index(
-        _chroma_collection_name=chroma_collection_name,
-        vector_store=vector_store,
-        service_context=service_context,
-    )
-    return index
-
-
-@app.get("/files_loaded")
-async def files_loaded():
-    data: list = chromadb_client.list_files_loaded_per_collection()
-    return {"files_loaded": data}
-
 
 @app.post("/query")
 async def query(request: Request):
     data = await request.json()
     text = data.get("text")
+    required_index_name = data.get("required_index_name")
 
     if text is None:
         return "No text field provided"
@@ -58,7 +37,9 @@ async def query(request: Request):
         default_text_qa_prompt_tmpl, prompt_type=PromptType.QUESTION_ANSWER
     )
 
-    query_engine: RetrieverQueryEngine = index.as_query_engine(
+    vector_store_index: VectorStoreIndex = vector_store_indexes[required_index_name]
+
+    query_engine = vector_store_index.as_query_engine(
         similarity_top_k=5,
         verbose=True,
         text_qa_template=default_text_qa_prompt,
@@ -66,7 +47,7 @@ async def query(request: Request):
     )
 
     response = query_engine.query(text)
-
+    
     return {
         "response": response.response,
         "nodes": [
@@ -79,32 +60,18 @@ async def query(request: Request):
 if __name__ == "__main__":
     logging.info("Iniciando la aplicación FastAPI...")
 
-    embedding_model = core.get_embedding_model()
-    chromadb_client = ChromaDBClient(
-        host=CHROMADB_HOST,
-        port=CHROMADB_PORT,
-    )
-    llm = core.get_llm(model_temperature=0.5)
+    pinecone_manager = PineconeClientManager()
+    
+    get_indexes_and_vstore = pinecone_manager.get_indexes_and_vstore()
+    vector_store_indexes = {}
+    for indexes_tuples in get_indexes_and_vstore.values():
+        index_name, index, vector_store = indexes_tuples
+        _, service_context = core.build_pre_index(
+            vector_store=vector_store,
+            llm_type="openai",
+        )
+        vector_store_indexes[index_name] = VectorStoreIndex.from_vector_store(
+            vector_store=vector_store, service_context=service_context
+        )
 
-    prompt_helper = PromptHelper(
-        context_window=DEFAULT_CONTEXT_WINDOW,
-        num_output=DEFAULT_NUM_OUTPUTS,
-        chunk_overlap_ratio=0.1,
-        chunk_size_limit=None,
-    )
-    node_parser = core.get_node_parser()
-
-    storage_context, service_context, vector_store = core.build_pre_index(
-        _chroma_collection_name=ChromaDBCollections.default_collection,
-        remote_db=chromadb_client.client,
-        node_parser=node_parser,
-        llm=llm,
-        embed_model=embedding_model,
-        prompt_helper=prompt_helper,
-    )
-    index = create_index(
-        ChromaDBCollections.default_collection,
-        service_context=service_context,
-        vector_store=vector_store,
-    )
     uvicorn.run(app, host="0.0.0.0", port=5001)

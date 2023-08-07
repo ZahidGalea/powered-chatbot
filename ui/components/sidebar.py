@@ -37,14 +37,6 @@ def sidebar(acidlabs_image, host, port):
     with st.sidebar:
         st.image(image=acidlabs_image)
         st.markdown("---")
-        st.markdown("# 📖 Files loaded to the Database")
-        files_loaded = get_files_loaded(host=host, port=port)
-        if files_loaded:
-            for file in files_loaded:
-                st.write(
-                    f"✅ '{keep_file_from_path(file[0])}' loaded at {utc_str_to_chile_str(file[1])} 🇨🇱."
-                )
-        st.markdown("---")
         st.markdown("# About")
         st.markdown("🤖 DataverseGPT allows you to ask questions about our team")
         st.markdown(

@@ -29,9 +29,9 @@ so the data could be limited
 ## What are we using for this PoC?
 
 * LlamaIndex and Langchain Framework
-* StableBeluga-7B-GPTQ as llm inference / Open API for PoC
-* intfloat/e5-large-v2 as Embedding model / Open API for PoC
-* ChromaDB as VectorDB
+* Alibaba Qwen-7B as llm inference
+* intfloat/e5-large-v2 as Embedding model
+* Pinecone as VectorDB
 * Streamlint and FastAPI for GUI and Backend.
 
 """

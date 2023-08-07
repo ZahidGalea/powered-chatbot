@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: app
-          image: "zahidgalea/chatbot-ui:{{ .Values.ui.image_version }}"
+          image: "zahidgalea/chatbot-ui:{{ .Values.app_version }}"
           env:
             - name: CHROMADB_HOST
               value: "chromadb-service"

@@ -14,11 +14,15 @@ spec:
     spec:
       containers:
         - name: app
-          image: "zahidgalea/powered-chatbot-app:{{ .Values.powered_chatbot_app.image_version }}"
+          image: "zahidgalea/powered-chatbot-app:{{ .Values.app_version }}"
           env:
-            - name: CHROMADB_HOST
-              value: "chromadb-service"
-            - name: CHROMADB_PORT
-              value: "{{ .Values.chromadb.container_port }}"
+            - name: PINECONE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: pineconekey
+                  key: pineconekey.txt
+            - name: PINECONE_ENVIRONMENT
+              value: "gcp-starter"
+
           ports:
             - containerPort: {{ .Values.powered_chatbot_app.container_port }}

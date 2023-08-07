@@ -1,27 +1,28 @@
 
 ARG PYTHON_VERSION="3.9"
 
-FROM python:${PYTHON_VERSION}
+FROM pytorch/pytorch:2.0.0-cuda11.7-cudnn8-devel
 USER root
 WORKDIR app
 
+RUN apt update && apt install -y git
 RUN pip install -U git+https://github.com/jerryjliu/llama_index.git
-RUN pip install pypdf
-RUN pip install chromadb-client
-RUN pip install sentence-transformers
-RUN pip install pydantic==1.10.11
-RUN pip install tiktoken
-RUN pip install gpt4all
-RUN pip install einops
-RUN pip install pdfplumber=="0.10.2"
-RUN pip install flask flask-requests
+RUN pip install transformers==4.31.0 accelerate tiktoken einops
 RUN pip install fastapi
+RUN pip install pinecone-client
+RUN git clone -b v1.0.8 https://github.com/Dao-AILab/flash-attention
+RUN cd flash-attention && pip install .
+RUN cd flash-attention && pip install csrc/layer_norm
+RUN cd flash-attention && pip install csrc/rotary
 RUN pip install uvicorn
-RUN pip install httpx
-RUN pip install python-dotenv
+RUN pip install --upgrade typing_extensions
+RUN pip install sentence_transformers~=2.2.2
+# Llamaindex required to load pdf
+RUN pip install pypdf
+
 
 COPY api.py .
 COPY core.py .
-COPY chroma_client.py .
+COPY pinecone_manager.py .
 
 ENTRYPOINT ["python","api.py"]

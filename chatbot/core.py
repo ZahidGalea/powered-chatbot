@@ -1,25 +1,71 @@
 import logging
 import sys
+from typing import Any, List
 
 from langchain.llms import OpenAIChat
 from llama_index import (
     OpenAIEmbedding,
+    PromptHelper,
     ServiceContext,
     StorageContext,
-    VectorStoreIndex,
 )
-from llama_index.constants import DEFAULT_CHUNK_OVERLAP, DEFAULT_CHUNK_SIZE
+from llama_index.constants import (
+    DEFAULT_CHUNK_OVERLAP,
+    DEFAULT_CHUNK_SIZE,
+    DEFAULT_CONTEXT_WINDOW,
+    DEFAULT_NUM_OUTPUTS,
+)
+from llama_index.embeddings.base import BaseEmbedding
 from llama_index.langchain_helpers.text_splitter import TokenTextSplitter
 from llama_index.node_parser import SimpleNodeParser
 from llama_index.prompts import Prompt
-from llama_index.vector_stores import ChromaVectorStore
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
 
-def get_embedding_model():
+def get_openai_embedding_model():
     return OpenAIEmbedding(embed_batch_size=42)
+
+
+def get_e5_large_embedding_model():
+    from sentence_transformers import SentenceTransformer
+
+    class e5Model(BaseEmbedding):
+        def __init__(
+            self,
+            model_name: str = "intfloat/e5-large-v2",
+            **kwargs: Any,
+        ) -> None:
+            self._model = SentenceTransformer(model_name, cache_folder="./")
+            super().__init__(**kwargs)
+
+        def _get_query_embedding(self, query: str) -> List[float]:
+            embeddings = self._model.encode(
+                sentences=f"query: {query}",
+                normalize_embeddings=True,
+                convert_to_numpy=True,
+            )
+            return embeddings.tolist()
+
+        def _get_text_embedding(self, text: str) -> List[float]:
+            embeddings = self._model.encode(
+                sentences=f"passage: {text}",
+                normalize_embeddings=True,
+                convert_to_numpy=True,
+            )
+            return embeddings.tolist()
+
+        def _get_text_embeddings(self, texts: List[str]) -> List[List[float]]:
+            embeddings = self._model.encode(
+                sentences=[f"passage: {text}" for text in texts],
+                normalize_embeddings=True,
+                convert_to_numpy=True,
+            )
+            return embeddings.tolist()
+
+    model = e5Model()
+    return model
 
 
 def get_default_prompts():
@@ -57,6 +103,7 @@ def get_default_prompts():
 
 
 def get_node_parser(chunk_size=DEFAULT_CHUNK_SIZE, chunk_overlap=DEFAULT_CHUNK_OVERLAP):
+    logging.info("Getting default get node parser")
     return SimpleNodeParser(
         text_splitter=TokenTextSplitter(
             separator=" ",
@@ -69,16 +116,10 @@ def get_node_parser(chunk_size=DEFAULT_CHUNK_SIZE, chunk_overlap=DEFAULT_CHUNK_O
     )
 
 
-def get_index(_chroma_collection_name, service_context, vector_store):
-    _index = VectorStoreIndex.from_vector_store(
-        vector_store=vector_store, service_context=service_context
-    )
-    return _index
-
-
-def get_llm(
+def get_openai_llm(
     model_temperature=0.7,
 ):
+    logging.info("Getting OpenAI LLM")
     return OpenAIChat(
         model_name="gpt-3.5-turbo",
         prefix_messages=[
@@ -92,28 +133,51 @@ def get_llm(
             },
             {
                 "role": "assistant",
-                "content": "You are an AI assistant that gives answer about documentation in a context only in english language",
+                "content": "You are an AI assistant that gives answer about documentation in the context",
             },
         ],
         temperature=model_temperature,
     )
 
 
+def get_qwen_llm(
+    model_temperature=0.7,
+):
+    logging.info("Getting QWEN LLm Model")
+    return ""
+
+
+def get_prompt_helper():
+    logging.info("Getting default promp helper")
+    return PromptHelper(
+        context_window=DEFAULT_CONTEXT_WINDOW,
+        num_output=DEFAULT_NUM_OUTPUTS,
+        chunk_overlap_ratio=0.1,
+        chunk_size_limit=None,
+    )
+
+
 def build_pre_index(
-    _chroma_collection_name,
-    remote_db,
-    embed_model,
-    node_parser,
-    llm=None,
+    vector_store,
+    llm_type: str = None,
+    embed_model=None,
+    node_parser=None,
     prompt_helper=None,
 ):
-    chroma_collection = remote_db.get_or_create_collection(_chroma_collection_name)
-    vector_store = ChromaVectorStore(chroma_collection=chroma_collection)
+    llm = None
+    if llm_type:
+        if llm_type == "qwen":
+            llm = get_qwen_llm()
+        elif llm_type == "openai":
+            llm = get_openai_llm()
+        else:
+            raise Exception(f"llm not in expected: {llm_type}")
+
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
     service_context = ServiceContext.from_defaults(
-        embed_model=embed_model,
+        embed_model=embed_model or get_e5_large_embedding_model(),
         llm=llm,
-        prompt_helper=prompt_helper,
-        node_parser=node_parser,
+        prompt_helper=prompt_helper or get_prompt_helper(),
+        node_parser=node_parser or get_node_parser(),
     )
-    return storage_context, service_context, vector_store
+    return storage_context, service_context

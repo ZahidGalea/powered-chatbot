@@ -35,6 +35,7 @@ kubectl config set-context --current --namespace=powered-chatbot
 ```
 
 ```bash
+kubectl create secret generic pineconekey --namespace powered-chatbot --from-file=./pineconekey.txt
 export VERSION=$(cat ./VERSION)
 cd helm
 helm upgrade powered-chatbot . --namespace powered-chatbot --install --create-namespace --debug --set app_version=$VERSION
