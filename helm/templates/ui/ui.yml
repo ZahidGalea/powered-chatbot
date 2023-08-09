@@ -1,3 +1,4 @@
+{{- if .Values.ui.enabled }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,9 +17,10 @@ spec:
         - name: app
           image: "zahidgalea/chatbot-ui:{{ .Values.app_version }}"
           env:
-            - name: CHROMADB_HOST
-              value: "chromadb-service"
-            - name: CHROMADB_PORT
-              value: "{{ .Values.chromadb.container_port }}"
+            - name: CHATBOT_HOST
+              value: "powered-chatbot-app-service"
+            - name: CHATBOT_PORT
+              value: "{{ .Values.powered_chatbot_app.container_port }}"
           ports:
             - containerPort: {{ .Values.ui.container_port }}
+{{- end }}

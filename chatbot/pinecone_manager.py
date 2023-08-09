@@ -17,7 +17,9 @@ PINECONE_INDEXES = ["dataverse-chatbot"]
 class PineconeClientManager:
     def __init__(self, key=None, environment=None, _type="http"):
         self.api_key = key or os.environ.get("PINECONE_API_KEY")
+        assert self.api_key
         self.environment = environment or os.environ.get("PINECONE_ENVIRONMENT")
+        assert self.environment
         self.pinecone_init()
 
     def pinecone_init(self, _type=None):

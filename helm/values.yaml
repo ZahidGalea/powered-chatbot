@@ -2,12 +2,12 @@ name: powered-chatbot
 namespace: "chatbot"
 app_version: 1.0.0
 
+
+busybox: false
+
 powered_chatbot_app:
   container_port: 5001
-
-chromadb:
-  image_version: latest
-  container_port: 8000
   
 ui:
+  enabled: false
   container_port: 80

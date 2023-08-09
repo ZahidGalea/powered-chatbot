@@ -2,6 +2,7 @@ import logging
 import sys
 from typing import Any, List
 
+import tiktoken
 from langchain.llms import OpenAIChat
 from llama_index import (
     OpenAIEmbedding,
@@ -9,6 +10,7 @@ from llama_index import (
     ServiceContext,
     StorageContext,
 )
+from llama_index.callbacks import CallbackManager, TokenCountingHandler
 from llama_index.constants import (
     DEFAULT_CHUNK_OVERLAP,
     DEFAULT_CHUNK_SIZE,
@@ -125,26 +127,19 @@ def get_openai_llm(
         prefix_messages=[
             {
                 "role": "assistant",
-                "content": "You are an AI assistant of the company Acid Labs. You use a tone that is friendly, technical and scientific.",
+                "content": "You are an Assistant of the company Acid Labs. You use a tone that is friendly, and funny.",
             },
             {
                 "role": "user",
-                "content": "Im a worker at Acid Labs that wants to know more about my company",
+                "content": "Im a worker at Acid Labs, that wants to know more about my company",
             },
             {
                 "role": "assistant",
-                "content": "You are an AI assistant that gives answer about documentation in the context",
+                "content": "You are an Assistant that gives answer about documentation in the context",
             },
         ],
         temperature=model_temperature,
     )
-
-
-def get_qwen_llm(
-    model_temperature=0.7,
-):
-    logging.info("Getting QWEN LLm Model")
-    return ""
 
 
 def get_prompt_helper():
@@ -159,25 +154,29 @@ def get_prompt_helper():
 
 def build_pre_index(
     vector_store,
-    llm_type: str = None,
+    llm_type: str = "openai",
     embed_model=None,
     node_parser=None,
     prompt_helper=None,
 ):
     llm = None
     if llm_type:
-        if llm_type == "qwen":
-            llm = get_qwen_llm()
-        elif llm_type == "openai":
+        if llm_type == "openai":
             llm = get_openai_llm()
         else:
             raise Exception(f"llm not in expected: {llm_type}")
 
+    token_counter = TokenCountingHandler(
+        tokenizer=tiktoken.encoding_for_model("gpt-3.5-turbo").encode
+    )
+
+    callback_manager = CallbackManager([token_counter])
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
     service_context = ServiceContext.from_defaults(
         embed_model=embed_model or get_e5_large_embedding_model(),
         llm=llm,
         prompt_helper=prompt_helper or get_prompt_helper(),
         node_parser=node_parser or get_node_parser(),
+        callback_manager=callback_manager,
     )
-    return storage_context, service_context
+    return storage_context, service_context, token_counter

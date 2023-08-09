@@ -1,22 +1,24 @@
+{{- if .Values.busybox }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: powered-chatbot-app-deployment
+  name: busybox-secret-validator
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: powered-chatbot-app
+      app: busybox-secret-validator
   template:
     metadata:
       labels:
-        app: powered-chatbot-app
+        app: busybox-secret-validator
     spec:
       containers:
-        - name: app
-          image: "zahidgalea/powered-chatbot-app:{{ .Values.app_version }}"
+        - name: secret-validator
+          image: "busybox"
+          args: [ "sleep", "3600" ]  # Esto mantendrá el contenedor ejecutando
           env:
-            - name: PINECONE_API_KEY
+            - name: PINECONE_KEY
               valueFrom:
                 secretKeyRef:
                   name: pinecone
@@ -31,6 +33,5 @@ spec:
                 secretKeyRef:
                   name: openai
                   key: apikey
+{{- end }}                  
 
-          ports:
-            - containerPort: {{ .Values.powered_chatbot_app.container_port }}

@@ -1,6 +1,19 @@
-###    
+##  Powered QA LLM
 
-## Build the images first:
+
+## Infrastructure
+
+```bash
+cd infrastructure/prod
+export GOOGLE_APPLICATION_CREDENTIALS=.json
+terraform plan -out=plan.tf
+```
+
+```bash
+terraform apply "plan.tf"
+```
+
+### Build the images first:
 
 ### Chatbot & UI
 
@@ -14,38 +27,22 @@ docker build -t zahidgalea/chatbot-ui:$VERSION ./ui
 docker push zahidgalea/chatbot-ui:$VERSION
 ```
 
-### ChromaDB
-
-```bash
-docker build -t zahidgalea/chromadb:latest ./chroma
-docker push zahidgalea/chromadb:latest
-```
-
 ## Deployment in K8S
 
 In helm folder
 
 ```bash
-cd helm
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm search repo bitnami
-helm dependency update
-helm dependency build
 kubectl config set-context --current --namespace=powered-chatbot
-```
-
-```bash
-kubectl create secret generic pineconekey --namespace powered-chatbot --from-file=./pineconekey.txt
 export VERSION=$(cat ./VERSION)
 cd helm
+kubectl apply -f ./secrets/
 helm upgrade powered-chatbot . --namespace powered-chatbot --install --create-namespace --debug --set app_version=$VERSION
 ```
 
-To access the embedding and database Api
-
 ```bash
 kubectl config set-context --current --namespace=powered-chatbot
-kubectl port-forward service/chromadb-service 8000:8000 &
+kubectl port-forward service/powered-chatbot-app-service 5001:5001 &
+kubectl port-forward service/ui-service  80:80 &
 ```
 
 ### To develop UI
