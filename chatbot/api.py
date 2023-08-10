@@ -27,11 +27,12 @@ async def query(request: Request):
     logging.info(f"Question required: {text}")
     # Must begin with user
     default_text_qa_prompt_tmpl = (
-        "Consider this information:\n"
+        "Consider this information (It could be in spanish or english, translate if necessary):\n"
         "---------------------\n"
         "{context_str}\n"
         "---------------------\n"
-        "Answer this question: {query_str}\n"
+        "Answer this question (translate if necessary): {query_str}\n"
+        'If you dont know it, please just say: "I dont know, I dont have enough documentation for this question, get close to Naoto or Zahid"\n'
     )
     default_text_qa_prompt = Prompt(
         default_text_qa_prompt_tmpl, prompt_type=PromptType.QUESTION_ANSWER

@@ -15,6 +15,11 @@ spec:
       containers:
         - name: app
           image: "zahidgalea/powered-chatbot-app:{{ .Values.app_version }}"
+          resources:
+            requests:
+              ephemeral-storage: "8Gi"
+            limits:
+              ephemeral-storage: "10Gi"
           env:
             - name: PINECONE_API_KEY
               valueFrom:
@@ -31,6 +36,18 @@ spec:
                 secretKeyRef:
                   name: openai
                   key: apikey
-
           ports:
             - containerPort: {{ .Values.powered_chatbot_app.container_port }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: powered-chatbot-app-service
+spec:
+  selector:
+    app: powered-chatbot-app
+  ports:
+    - protocol: TCP
+      port: {{ .Values.powered_chatbot_app.container_port }}
+      targetPort: {{ .Values.powered_chatbot_app.container_port }}
+

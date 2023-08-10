@@ -9,7 +9,10 @@ module "project-services" {
     "dataform.googleapis.com",
     "dataplex.googleapis.com",
     "container.googleapis.com",
-    "iap.googleapis.com"
-    
+    "iap.googleapis.com",
+    "apikeys.googleapis.com",
+    "servicemanagement.googleapis.com",
+    "servicecontrol.googleapis.com",
+    "endpoints.googleapis.com"
   ]
 }

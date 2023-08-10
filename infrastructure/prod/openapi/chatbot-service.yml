@@ -1,0 +1,50 @@
+swagger: '2.0'
+info:
+  title: "Chatbot API"
+  description: "API for a powered chatbot service"
+  version: "1.1"
+host: "chatbot.endpoints.chatbot-llm-395402.cloud.goog"
+basePath: "/v1"
+produces:
+  - "application/json"
+schemes:
+  - "http"
+  - "https"
+securityDefinitions:
+  api_key:
+    type: "apiKey"
+    name: "key"
+    in: "query"
+paths:
+  /query/dataverse:
+    post:
+      description: "Dataverse documentation endpoint"
+      operationId: "dataversellmrequest"
+      x-google-backend:
+        address: "http://powered-chatbot-app-service.powered-chatbot.svc.cluster.local:5001/query/dataverse"
+        protocol: http/1.1
+      x-google-endpoints:
+        - name: "chatbot.endpoints.chatbot-llm-395402.cloud.goog"
+          allowCors: true
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/llmResponse"
+      
+definitions:
+  QueryBody:
+    type: "object"
+    properties:
+      text:
+        type: "string"
+  llmResponse:
+    type: "object"
+    properties:
+      response:
+        type: "string"
+      nodes:
+        type: array
+      tokens:
+        type: object
+      

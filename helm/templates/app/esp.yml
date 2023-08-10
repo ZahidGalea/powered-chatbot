@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: espv2-deployment
+  labels:
+    app: espv2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: espv2
+  template:
+    metadata:
+      labels:
+        app: espv2
+    spec:
+      containers:
+      - name: espv2
+        image: gcr.io/endpoints-release/endpoints-runtime:2
+        args:
+          - "--listener_port=5002"
+          - "--backend=http://powered-chatbot-app-service.powered-chatbot.svc.cluster.local:{{ .Values.powered_chatbot_app.container_port }}"
+          - "--service=chatbot.endpoints.{{ .Values.gcp_project_id }}.cloud.goog"
+          - "--rollout_strategy=managed"
+        ports:
+          - containerPort: 5002
+        
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: espv2-service
+spec:
+  loadBalancerIP: 35.186.223.251
+  selector:
+    app: espv2
+  ports:
+    - protocol: TCP
+      port: 5002
+      targetPort: 5002
+  type: LoadBalancer

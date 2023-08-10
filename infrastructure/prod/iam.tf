@@ -5,18 +5,14 @@ resource "google_service_account" "chatbot-gke-sa" {
 
 
 module "project-iam-bindings" {
-  count = 0
   source   = "terraform-google-modules/iam/google//modules/projects_iam"
   projects = [local.gcp_project_id]
   mode     = "additive"
 
   bindings = {
-    "roles/bigquery.dataEditor" = [
+    "roles/editor" = [
+      "serviceAccount:${local.compute_default_sa}",
       "serviceAccount:${google_service_account.chatbot-gke-sa.email}"
-    ]
-    "roles/secretmanager.secretAccessor" = [
-      "serviceAccount:${google_service_account.chatbot-gke-sa.email}"
-    ]
-
+    ],
   }
 }

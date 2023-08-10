@@ -6,11 +6,12 @@
 ```bash
 cd infrastructure/prod
 export GOOGLE_APPLICATION_CREDENTIALS=.json
-terraform plan -out=plan.tf
+terraform plan -out=plan.tfplan
+terraform apply "plan.tfplan"
 ```
 
 ```bash
-terraform apply "plan.tf"
+terraform apply "plan.tfplan"
 ```
 
 ### Build the images first:
@@ -32,11 +33,12 @@ docker push zahidgalea/chatbot-ui:$VERSION
 In helm folder
 
 ```bash
-kubectl config set-context --current --namespace=powered-chatbot
 export VERSION=$(cat ./VERSION)
 cd helm
-kubectl apply -f ./secrets/
+gcloud container clusters get-credentials chatbot-llm-gke --region us-east1 --project chatbot-llm-395402
 helm upgrade powered-chatbot . --namespace powered-chatbot --install --create-namespace --debug --set app_version=$VERSION
+kubectl config set-context --current --namespace=powered-chatbot
+kubectl apply -f ./secrets/
 ```
 
 ```bash

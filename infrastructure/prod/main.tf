@@ -5,7 +5,8 @@ locals {
   gcp_default_zone            = "us-east1-b"
   project_default_name_scored = "chatbot_llm"
   project_default_name_hyped  = "chatbot-llm"
-  env = "prod"
+  env                         = "prod"
+  compute_default_sa          = "823059968408-compute@developer.gserviceaccount.com"
 }
 
 provider "google" {

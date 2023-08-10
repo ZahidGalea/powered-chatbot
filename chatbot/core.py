@@ -119,7 +119,7 @@ def get_node_parser(chunk_size=DEFAULT_CHUNK_SIZE, chunk_overlap=DEFAULT_CHUNK_O
 
 
 def get_openai_llm(
-    model_temperature=0.7,
+    model_temperature=0.5,
 ):
     logging.info("Getting OpenAI LLM")
     return OpenAIChat(
@@ -131,11 +131,11 @@ def get_openai_llm(
             },
             {
                 "role": "user",
-                "content": "Im a worker at Acid Labs, that wants to know more about my company",
+                "content": "Im a worker at Acid Labs, a technology consulting company, that wants to know more about the context that I will define",
             },
             {
                 "role": "assistant",
-                "content": "You are an Assistant that gives answer about documentation in the context",
+                "content": "You are an Assistant that gives answer about documentation in the context in the language that the user is using",
             },
         ],
         temperature=model_temperature,
