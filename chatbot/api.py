@@ -36,7 +36,7 @@ async def slack_dataverse(request: Request, background_tasks: BackgroundTasks):
         payload = {
             "response_type": "in_channel",
             "replace_original": True,
-            "text": f"----{query_text}----\n{response.response}",
+            "text": f"---- {query_text} ----\n{response.response}",
         }
         requests.post(url_to_response, json=payload)
 
