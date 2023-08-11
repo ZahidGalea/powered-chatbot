@@ -36,6 +36,11 @@ spec:
                 secretKeyRef:
                   name: openai
                   key: apikey
+            - name: SLACK_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: slacktoken
+                  key: slacktoken
           ports:
             - containerPort: {{ .Values.powered_chatbot_app.container_port }}
 ---

@@ -69,41 +69,6 @@ def get_e5_large_embedding_model():
     model = e5Model()
     return model
 
-
-def get_default_prompts():
-    text_qa_template_str = (
-        "Context information is below.\n"
-        "---------------------\n"
-        "{context_str}\n"
-        "---------------------\n"
-        "Using both the context information and also using your own knowledge, "
-        "Answer the question: {query_str}\n"
-        "If the context isn't helpful, Just result 'I Dont know what to say'.\n"
-    )
-    text_qa_template = Prompt(text_qa_template_str)
-
-    refine_template_str = (
-        "The original question is as follows: {query_str}\n"
-        "We have provided an existing answer: {existing_answer}\n"
-        "We have the opportunity to refine the existing answer "
-        "(only if needed) with some more context below.\n"
-        "------------\n"
-        "{context_msg}\n"
-        "------------\n"
-        "Using both the new context and your own knowledege, update or repeat the existing answer.\n"
-    )
-
-    refine_template = Prompt(refine_template_str)
-
-    system_prompts_str = """
-# Chatbot Model
-- Chatbot Model is a helpful and harmless open-source AI language model developed by Someone.
-- Chatbot Model is more than just an information source, Chatbot Model is also able to write poetry, short stories, and make jokes.
-"""
-
-    return text_qa_template, refine_template, system_prompts_str
-
-
 def get_node_parser(chunk_size=DEFAULT_CHUNK_SIZE, chunk_overlap=DEFAULT_CHUNK_OVERLAP):
     logging.info("Getting default get node parser")
     return SimpleNodeParser(
@@ -119,7 +84,7 @@ def get_node_parser(chunk_size=DEFAULT_CHUNK_SIZE, chunk_overlap=DEFAULT_CHUNK_O
 
 
 def get_openai_llm(
-    model_temperature=0.5,
+    model_temperature=0.7,
 ):
     logging.info("Getting OpenAI LLM")
     return OpenAIChat(
@@ -127,16 +92,16 @@ def get_openai_llm(
         prefix_messages=[
             {
                 "role": "assistant",
-                "content": "You are an Assistant of the company Acid Labs. You use a tone that is friendly, and funny.",
+                "content": "You are an assistant for the company Acid Labs. Use a tone that is friendly and a bit funny."
             },
             {
                 "role": "user",
-                "content": "Im a worker at Acid Labs, a technology consulting company, that wants to know more about the context that I will define",
+                "content": "I'm a worker at Acid Labs, a technology consulting company. I want to know more about the context that I will define for my company."
             },
             {
                 "role": "assistant",
-                "content": "You are an Assistant that gives answer about documentation in the context in the language that the user is using",
-            },
+                "content": "You are an assistant that provides answers about documentation in the language the question is posed in."
+            }
         ],
         temperature=model_temperature,
     )

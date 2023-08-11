@@ -32,7 +32,7 @@ kind: Service
 metadata:
   name: espv2-service
 spec:
-  loadBalancerIP: 35.186.223.251
+  loadBalancerIP: 34.73.82.200
   selector:
     app: espv2
   ports:

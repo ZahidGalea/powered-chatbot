@@ -31,13 +31,23 @@ paths:
           description: "Successful operation"
           schema:
             $ref: "#/definitions/llmResponse"
+  /slack/dataverse:
+    post:
+      description: "Dataverse documentation endpoint for Slack"
+      operationId: "dataversellmrequestslack"
+      x-google-backend:
+        address: "http://powered-chatbot-app-service.powered-chatbot.svc.cluster.local:5001/slack/dataverse"
+        protocol: http/1.1
+      x-google-endpoints:
+        - name: "chatbot.endpoints.chatbot-llm-395402.cloud.goog"
+          allowCors: true
+      responses:
+        200:
+          description: "Successful operation"
+          schema:
+            $ref: "#/definitions/llmResponse"
       
 definitions:
-  QueryBody:
-    type: "object"
-    properties:
-      text:
-        type: "string"
   llmResponse:
     type: "object"
     properties:
@@ -47,4 +57,11 @@ definitions:
         type: array
       tokens:
         type: object
+  SlackResponse:
+    type: "object"
+    properties:
+      response_type:
+        type: "string"
+      text:
+        type: "string"
       

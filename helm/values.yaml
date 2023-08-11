@@ -3,7 +3,7 @@ namespace: "chatbot"
 app_version: 1.0.0
 gcp_project_id: "chatbot-llm-395402"
 
-busybox: true
+busybox: false
 # kubectl exec -it busybox-secret-validator-7b86b5bdb8-nmrmw -- sh
 
 powered_chatbot_app:

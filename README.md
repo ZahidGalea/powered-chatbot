@@ -54,3 +54,13 @@ export VERSION=$(cat ./VERSION)
 docker build -t zahidgalea/chatbot-ui:$VERSION ./ui
 docker run -v ${pwd}/ui:/app/ zahidgalea/chatbot-ui:$VERSION
 ```
+
+### Fast iteration deployment
+
+```bash
+export VERSION=$(cat ./VERSION)
+docker build -t zahidgalea/powered-chatbot-app:$VERSION ./chatbot
+docker push zahidgalea/powered-chatbot-app:$VERSION
+cd helm
+helm upgrade powered-chatbot . --namespace powered-chatbot --install --create-namespace --debug --set app_version=$VERSION
+```

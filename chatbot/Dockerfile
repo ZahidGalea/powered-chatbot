@@ -13,6 +13,7 @@ RUN pip install pinecone-client
 RUN pip install uvicorn
 RUN pip install --upgrade typing_extensions
 RUN pip install sentence_transformers~=2.2.2
+RUN pip install python-multipart
 
 COPY api.py .
 COPY core.py .
