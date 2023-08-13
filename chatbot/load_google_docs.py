@@ -1,10 +1,8 @@
-from llama_index import set_global_service_context
-
 import core
 from chatbot.pinecone_manager import PineconeClientManager
 
 
-def load_local_folder(folder, index_name_to_load):
+def load_google_docs_folder(documents_id, index_name_to_load):
     pinecone_manager = PineconeClientManager()
     get_indexes_and_vstore = pinecone_manager.get_indexes_and_vstore()
     for indexes_tuples in get_indexes_and_vstore.values():
@@ -15,16 +13,23 @@ def load_local_folder(folder, index_name_to_load):
                 llm_type="openai",
             )
 
-            set_global_service_context(service_context)
-
-            pinecone_manager.load_local_folder_to_pinecone(
-                folder_path=folder,
+            pinecone_manager.load_google_doc_to_pinecone(
                 index_name=index_name,
                 service_context=service_context,
                 storage_context=storage_context,
-                delete_if_exists=False,
+                documents_id=documents_id,
             )
 
 
 if __name__ == "__main__":
-    load_local_folder(folder="data/", index_name_to_load="dataverse-chatbot")
+    documents_id = ["1CxgqMrXRazO7tRbqwybP00MfCiGiCAPo3x7Eaq1VaMg"]
+
+    from google.oauth2 import service_account
+
+    SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
+    SERVICE_ACCOUNT_FILE = '.json'
+
+    credentials = service_account.Credentials.from_service_account_file(
+            SERVICE_ACCOUNT_FILE, scopes=SCOPES)
+    
+    load_google_docs_folder(documents_id, index_name_to_load="dataverse-docs")

@@ -4,14 +4,18 @@ from datetime import datetime
 
 import pinecone
 from llama_index import (
+    GoogleDocsReader,
     ServiceContext,
     SimpleDirectoryReader,
     StorageContext,
     VectorStoreIndex,
+TreeIndex
 )
 from llama_index.vector_stores import PineconeVectorStore
 
-PINECONE_INDEXES = ["dataverse-chatbot"]
+
+
+PINECONE_INDEXES = ["dataverse-docs"]
 
 
 class PineconeClientManager:
@@ -33,10 +37,10 @@ class PineconeClientManager:
     def get_pinecone_index(self, index_name: str):
         return pinecone.Index(index_name)
 
-    def create_pinecone_index(self, index_name: str, metadata_config: dict):
-        pinecone.create_index(
+    def create_pinecone_index(self, index_name: str, dimension, metadata_config: dict):
+        return pinecone.create_index(
             index_name,
-            dimension=1024,
+            dimension=dimension,
             metric="cosine",
             metadata_config={"company": "acidlabs", "support": "dataverse"}.update(
                 metadata_config
@@ -49,25 +53,38 @@ class PineconeClientManager:
         index_name: str,
         service_context: ServiceContext,
         storage_context: StorageContext,
-        delete_if_exists=False,
     ):
         filename_inclusion = lambda filename: {
             "file_name": filename,
             "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         }
 
-        index = self.get_pinecone_index(index_name)
-
         documents = SimpleDirectoryReader(
-            input_dir=folder_path, filename_as_id=True, file_metadata=filename_inclusion
+            input_dir=folder_path,
+            filename_as_id=True,
+            file_metadata=filename_inclusion,
         ).load_data()
 
-        if delete_if_exists:
-            files_to_load = [doc.metadata["file_name"] for doc in documents]
-            # Truncate first then load again
-            for file in files_to_load:
-                logging.info(f"Deleting file {file} from {index_name} if exists")
-                index.delete(filter={"file_name": file})
+        logging.info(f"Loading {len(documents)} documents to {index_name}")
+        from chatbot.core import get_sentence_node_parser
+        node_parser = get_sentence_node_parser()
+        nodes = node_parser.get_nodes_from_documents(documents)
+
+        
+        vector_store_index = VectorStoreIndex.from_documents(
+            documents=documents,
+            service_context=service_context,
+            storage_context=storage_context,
+        )
+
+    def load_google_doc_to_pinecone(
+        self,
+        documents_id: list,
+        index_name: str,
+        service_context: ServiceContext,
+        storage_context: StorageContext,
+    ):
+        documents = GoogleDocsReader().load_data(document_ids=documents_id)
         logging.info(f"Loading {len(documents)} documents to {index_name}")
         result = VectorStoreIndex.from_documents(
             documents=documents,

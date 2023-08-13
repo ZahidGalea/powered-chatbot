@@ -18,16 +18,24 @@ from llama_index.constants import (
     DEFAULT_NUM_OUTPUTS,
 )
 from llama_index.embeddings.base import BaseEmbedding
+from llama_index.embeddings.openai import OpenAIEmbeddingMode, OpenAIEmbeddingModelType
 from llama_index.langchain_helpers.text_splitter import TokenTextSplitter
-from llama_index.node_parser import SimpleNodeParser
-from llama_index.prompts import Prompt
+from llama_index.node_parser import SentenceWindowNodeParser, SimpleNodeParser
+from llama_index.node_parser.extractors import (
+    KeywordExtractor,
+    MetadataExtractor,
+)
+from llama_index.text_splitter import SentenceSplitter
 
 logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 logging.getLogger().addHandler(logging.StreamHandler(stream=sys.stdout))
 
 
 def get_openai_embedding_model():
-    return OpenAIEmbedding(embed_batch_size=42)
+    return OpenAIEmbedding(
+        model=OpenAIEmbeddingModelType.TEXT_EMBED_ADA_002,
+        mode=OpenAIEmbeddingMode.TEXT_SEARCH_MODE,
+    )
 
 
 def get_e5_large_embedding_model():
@@ -36,7 +44,7 @@ def get_e5_large_embedding_model():
     class e5Model(BaseEmbedding):
         def __init__(
             self,
-            model_name: str = "intfloat/e5-large-v2",
+            model_name: str = "intfloat/multilingual-e5-large",
             **kwargs: Any,
         ) -> None:
             self._model = SentenceTransformer(model_name, cache_folder="./")
@@ -69,6 +77,7 @@ def get_e5_large_embedding_model():
     model = e5Model()
     return model
 
+
 def get_node_parser(chunk_size=DEFAULT_CHUNK_SIZE, chunk_overlap=DEFAULT_CHUNK_OVERLAP):
     logging.info("Getting default get node parser")
     return SimpleNodeParser(
@@ -79,29 +88,55 @@ def get_node_parser(chunk_size=DEFAULT_CHUNK_SIZE, chunk_overlap=DEFAULT_CHUNK_O
             backup_separators=["\n"],
         ),
         include_metadata=True,
-        metadata_extractor=None,
+    )
+
+
+def get_sentence_node_parser():
+    logging.info("Getting default sentence node parser")
+    return SentenceWindowNodeParser.from_defaults(
+        include_metadata=True,
+        window_size=9,
+        window_metadata_key="window",
+        original_text_metadata_key="original_text",
+        sentence_splitter=SentenceSplitter(
+            separator="\n", chunk_overlap=5, chunk_size=60
+        ).split_text,
+        metadata_extractor=MetadataExtractor(
+            extractors=[
+                KeywordExtractor(keywords=5),
+            ],
+        ),
     )
 
 
 def get_openai_llm(
-    model_temperature=0.7,
+    model_name,
+    model_temperature=0.6,
 ):
     logging.info("Getting OpenAI LLM")
     return OpenAIChat(
-        model_name="gpt-3.5-turbo",
+        model_name=model_name,
         prefix_messages=[
             {
-                "role": "assistant",
-                "content": "You are an assistant for the company Acid Labs. Use a tone that is friendly and a bit funny."
+                "role": "system",
+                "content": """
+You will be provided with information that comes from documents, the metadata will be available,
+ try to join them, and your task is to answer the user question, following these rules:
+
+-If you dont know the answer just say it, and reference Naoto or Zahid for help
+-If applicable, a list of examples that exists in the document
+-You are a system part of Acid Labs companies, and all the users are from acidlabs too
+""",
             },
             {
                 "role": "user",
-                "content": "I'm a worker at Acid Labs, a technology consulting company. I want to know more about the context that I will define for my company."
+                "content": "I'm a worker at Acid Labs, a technology consulting company. "
+                "I want to know more about the context that I will define for my company.",
             },
             {
                 "role": "assistant",
-                "content": "You are an assistant that provides answers about documentation in the language the question is posed in."
-            }
+                "content": "I am an assistant that is friendly and a little bit funny, also I like to add slack emojis",
+            },
         ],
         temperature=model_temperature,
     )
@@ -112,7 +147,7 @@ def get_prompt_helper():
     return PromptHelper(
         context_window=DEFAULT_CONTEXT_WINDOW,
         num_output=DEFAULT_NUM_OUTPUTS,
-        chunk_overlap_ratio=0.1,
+        chunk_overlap_ratio=0.2,
         chunk_size_limit=None,
     )
 
@@ -127,7 +162,7 @@ def build_pre_index(
     llm = None
     if llm_type:
         if llm_type == "openai":
-            llm = get_openai_llm()
+            llm = get_openai_llm("gpt-3.5-turbo")
         else:
             raise Exception(f"llm not in expected: {llm_type}")
 
@@ -138,10 +173,10 @@ def build_pre_index(
     callback_manager = CallbackManager([token_counter])
     storage_context = StorageContext.from_defaults(vector_store=vector_store)
     service_context = ServiceContext.from_defaults(
-        embed_model=embed_model or get_e5_large_embedding_model(),
+        embed_model=embed_model or get_openai_embedding_model(),
         llm=llm,
         prompt_helper=prompt_helper or get_prompt_helper(),
-        node_parser=node_parser or get_node_parser(),
+        node_parser=node_parser or get_sentence_node_parser(),
         callback_manager=callback_manager,
     )
     return storage_context, service_context, token_counter

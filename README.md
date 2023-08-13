@@ -22,10 +22,14 @@ terraform apply "plan.tfplan"
 export VERSION=$(cat ./VERSION)
 # Chatbot
 docker build -t zahidgalea/powered-chatbot-app:$VERSION ./chatbot
+docker build -t zahidgalea/powered-chatbot-app:latest ./chatbot
 docker push zahidgalea/powered-chatbot-app:$VERSION
+docker push zahidgalea/powered-chatbot-app:latest
 # UI
 docker build -t zahidgalea/chatbot-ui:$VERSION ./ui
+docker build -t zahidgalea/chatbot-ui:latest ./ui
 docker push zahidgalea/chatbot-ui:$VERSION
+docker push zahidgalea/chatbot-ui:latest
 ```
 
 ## Deployment in K8S
@@ -64,3 +68,8 @@ docker push zahidgalea/powered-chatbot-app:$VERSION
 cd helm
 helm upgrade powered-chatbot . --namespace powered-chatbot --install --create-namespace --debug --set app_version=$VERSION
 ```
+
+
+### To implement in future
+
+https://gpt-index.readthedocs.io/en/latest/core_modules/query_modules/router/root.html

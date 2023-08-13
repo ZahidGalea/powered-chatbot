@@ -6,6 +6,7 @@ import uvicorn
 from fastapi import FastAPI, Request
 from langchain.llms import openai
 from llama_index import Prompt, VectorStoreIndex
+from llama_index.indices.postprocessor import MetadataReplacementPostProcessor
 from llama_index.prompts.prompt_type import PromptType
 from starlette.background import BackgroundTasks
 
@@ -29,6 +30,9 @@ async def slack_dataverse(request: Request, background_tasks: BackgroundTasks):
             verbose=True,
             text_qa_template=prompt,
             response_mode="simple_summarize",
+            node_postprocessors=[
+                MetadataReplacementPostProcessor(target_metadata_key="window")
+            ],
         )
 
         response = query_engine.query(query_text)
@@ -36,7 +40,7 @@ async def slack_dataverse(request: Request, background_tasks: BackgroundTasks):
         payload = {
             "response_type": "in_channel",
             "replace_original": True,
-            "text": f"---- {query_text} ----\n{response.response}",
+            "text": f"*{query_text}*\n\n{response.response}",
         }
         requests.post(url_to_response, json=payload)
 
@@ -50,7 +54,7 @@ async def slack_dataverse(request: Request, background_tasks: BackgroundTasks):
 
     if channel_name != "dataverse-question-aswering":
         return {
-            "text": "You cant use this channel, you have to move to dataverse-secretary channel",
+            "text": "You cant use this channel, you have to move to dataverse-question-aswering channel",
         }
 
     if text is None:
@@ -58,15 +62,13 @@ async def slack_dataverse(request: Request, background_tasks: BackgroundTasks):
 
     logging.info(f"Question required: {text}")
     default_text_qa_prompt_tmpl = (
-        f"user: I am {user_name}, a worker at Acidlabs"
-        "Consider the following context:\n"
+        f"I am {user_name}"
+        "Consider the following information:\n"
         "---------------------\n"
         "{context_str}\n"
         "---------------------\n"
-        "Based on the context and nothing else, "
-        "Answer this question (Translate the answer to the language of the question!): {query_str}\n"
-        'If you dont know it, please just say: "I dont have enough documentation for this question, '
-        'get close to Naoto or Zahid"'
+        "Based on the information, "
+        "Answer this question: {query_str}"
     )
     default_text_qa_prompt = Prompt(
         default_text_qa_prompt_tmpl, prompt_type=PromptType.QUESTION_ANSWER
@@ -76,13 +78,13 @@ async def slack_dataverse(request: Request, background_tasks: BackgroundTasks):
         process_query,
         default_text_qa_prompt,
         text,
-        6,
-        "dataverse-chatbot",
+        8,
+        "dataverse-docs",
         response_url,
     )
 
     return {
-        "text": "Wait a little bit... processing response",
+        "text": "Wait a little bit...",
     }
 
 
@@ -97,27 +99,28 @@ async def query_dataverse(request: Request):
     logging.info(f"Question required: {text}")
     # Must begin with user
     default_text_qa_prompt_tmpl = (
-        f"user: I am zahid.galea, a worker at Acidlabs"
-        "Consider the following context:\n"
+        f"I am Zahid Galea"
+        "Consider the following information:\n"
         "---------------------\n"
         "{context_str}\n"
         "---------------------\n"
-        "Based on the context and nothing else, "
-        "Answer this question (Translate the answer to the language of the question!): {query_str}\n"
-        'If you dont know it, please just say: "I dont have enough documentation for this question, '
-        'get close to Naoto or Zahid"'
+        "Based on the information, "
+        "Answer this question: {query_str}"
     )
     default_text_qa_prompt = Prompt(
         default_text_qa_prompt_tmpl, prompt_type=PromptType.QUESTION_ANSWER
     )
 
-    vector_store_index: VectorStoreIndex = vector_store_indexes["dataverse-chatbot"]
+    vector_store_index: VectorStoreIndex = vector_store_indexes["dataverse-docs"]
 
     query_engine = vector_store_index.as_query_engine(
-        similarity_top_k=5,
+        similarity_top_k=8,
         verbose=True,
         text_qa_template=default_text_qa_prompt,
         response_mode="simple_summarize",
+        node_postprocessors=[
+            MetadataReplacementPostProcessor(target_metadata_key="window")
+        ],
     )
 
     response = query_engine.query(text)

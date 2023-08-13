@@ -6,14 +6,16 @@ USER root
 WORKDIR app
 
 RUN apt update && apt install -y git
-RUN pip install -U git+https://github.com/jerryjliu/llama_index.git
-RUN pip install transformers==4.31.0 accelerate tiktoken einops
 RUN pip install fastapi
 RUN pip install pinecone-client
 RUN pip install uvicorn
+RUN pip install python-multipart
+
+RUN pip install -U git+https://github.com/jerryjliu/llama_index.git@v0.8.0
+RUN pip install transformers==4.31.0 accelerate tiktoken einops
 RUN pip install --upgrade typing_extensions
 RUN pip install sentence_transformers~=2.2.2
-RUN pip install python-multipart
+RUN pip install pypdf
 
 COPY api.py .
 COPY core.py .
