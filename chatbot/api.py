@@ -63,7 +63,7 @@ async def slack_dataverse(request: Request, background_tasks: BackgroundTasks):
     logging.info(f"Question required: {text}")
     default_text_qa_prompt_tmpl = (
         f"I am {user_name}"
-        "Consider the following information:\n"
+        "Consider the following documentation nodes:\n"
         "---------------------\n"
         "{context_str}\n"
         "---------------------\n"
@@ -100,7 +100,7 @@ async def query_dataverse(request: Request):
     # Must begin with user
     default_text_qa_prompt_tmpl = (
         f"I am Zahid Galea"
-        "Consider the following information:\n"
+        "Consider the following documentation nodes:\n"
         "---------------------\n"
         "{context_str}\n"
         "---------------------\n"

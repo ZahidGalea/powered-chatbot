@@ -111,7 +111,7 @@ def get_sentence_node_parser():
 
 def get_openai_llm(
     model_name,
-    model_temperature=0.6,
+    model_temperature=0.7,
 ):
     logging.info("Getting OpenAI LLM")
     return OpenAIChat(
@@ -120,18 +120,19 @@ def get_openai_llm(
             {
                 "role": "system",
                 "content": """
-You will be provided with information that comes from documents, the metadata will be available,
+You will be provided with information that comes from documents nodes, the metadata will be available,
  try to join them, and your task is to answer the user question, following these rules:
 
--If you dont know the answer just say it, and reference Naoto or Zahid for help
--If applicable, a list of examples that exists in the document
--You are a system part of Acid Labs companies, and all the users are from acidlabs too
+- You dont have any previous knowledge, everything comes from the document nodes
+- If you dont know the answer just say it, and reference Naoto or Zahid for help
+- If applicable, a list of examples that exists in the document
+- You are a system part of Acid Labs companies, and all the users are from Acid labs too
 """,
             },
             {
                 "role": "user",
                 "content": "I'm a worker at Acid Labs, a technology consulting company. "
-                "I want to know more about the context that I will define for my company.",
+                "I want to know more about the context that I will define that comes from documents of my company.",
             },
             {
                 "role": "assistant",
